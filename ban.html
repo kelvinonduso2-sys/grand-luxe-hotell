@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Luxe Hotel - Staff & Operations Management</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#080d1a',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-navy-900 text-slate-100 antialiased min-h-screen flex flex-col md:flex-row custom-scrollbar">
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-full md:w-64 bg-navy-950 text-slate-300 flex-shrink-0 flex flex-col justify-between border-b md:border-b-0 md:border-r border-slate-800/80 z-20">
+        <div>
+            <!-- Branding Header -->
+            <div class="p-6 border-b border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold-600 via-gold-500 to-gold-400 flex items-center justify-center text-navy-950 font-extrabold text-xl shadow-lg shadow-gold-500/20">
+                        GL
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white tracking-wide text-lg">Grand Luxe</h1>
+                        <p class="text-[10px] text-gold-400 uppercase tracking-widest font-bold">Hotel & Operations</p>
+                    </div>
+                </div>
+                <!-- Mobile Navigation Toggle -->
+                <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-white focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav id="navMenu" class="p-4 space-y-1.5 hidden md:block">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all bg-gold-500 text-navy-950 font-bold shadow-md shadow-gold-500/10">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('staff')" id="nav-staff" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span>Staff Directory</span>
+                </button>
+                <button onclick="switchTab('rooms')" id="nav-rooms" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-400 hover:bg-slate-800/60 hover:text-white">
+                    <i data-lucide="bed-double" class="w-5 h-5"></i>
+                    <span>Rooms & Duty Assign</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Manager Quick Profile Badge -->
+        <div class="p-4 border-t border-slate-800/80 hidden md:flex items-center space-x-3 bg-navy-900/50">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Manager" class="w-10 h-10 rounded-full object-cover border-2 border-gold-400">
+            <div class="overflow-hidden">
+                <h4 class="text-sm font-semibold text-white truncate">Elena Rostova</h4>
+                <p class="text-xs text-slate-400 truncate">General Manager</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto custom-scrollbar">
+        
+        <!-- Header Navbar -->
+        <header class="bg-navy-950/80 backdrop-blur-md border-b border-slate-800/80 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+            <div class="flex items-center space-x-3">
+                <h2 id="pageTitle" class="text-xl font-bold text-white tracking-tight">Operations Dashboard</h2>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button onclick="openModal()" class="flex items-center space-x-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-lg shadow-gold-500/20 active:scale-95">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Add Staff Member</span>
+                </button>
+                
+                <div class="relative">
+                    <button class="p-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-400 rounded-full animate-pulse"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Container -->
+        <div class="p-6 space-y-6 flex-1">
+
+            <!-- ================= TAB 1: OVERVIEW DASHBOARD ================= -->
+            <div id="view-dashboard" class="space-y-6">
+                <!-- Statistics Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-navy-800/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Total Rooms</p>
+                            <h3 class="text-2xl font-extrabold text-white mt-1" id="statTotalRooms">120</h3>
+                            <p class="text-xs text-emerald-400 font-medium mt-1">102 Ready for Guests</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-slate-700/50 border border-slate-600/50 flex items-center justify-center text-gold-400">
+                            <i data-lucide="hotel" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-navy-800/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Occupancy Rate</p>
+                            <h3 class="text-2xl font-extrabold text-white mt-1">87.5%</h3>
+                            <p class="text-xs text-emerald-400 font-medium mt-1">+5.2% vs last week</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-slate-700/50 border border-slate-600/50 flex items-center justify-center text-gold-400">
+                            <i data-lucide="trending-up" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-navy-800/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Staff On Duty</p>
+                            <h3 class="text-2xl font-extrabold text-white mt-1" id="statActiveStaff">0</h3>
+                            <p class="text-xs text-slate-400 font-medium mt-1"><span id="statOnLeave">0</span> Personnel On Leave</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-slate-700/50 border border-slate-600/50 flex items-center justify-center text-gold-400">
+                            <i data-lucide="user-check" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-navy-800/80 border border-slate-800 p-5 rounded-2xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Daily Revenue</p>
+                            <h3 class="text-2xl font-extrabold text-white mt-1">$18,450</h3>
+                            <p class="text-xs text-emerald-400 font-medium mt-1">On track for target</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-slate-700/50 border border-slate-600/50 flex items-center justify-center text-gold-400">
+                            <i data-lucide="dollar-sign" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Details Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Staff Duty Overview Table -->
+                    <div class="lg:col-span-2 bg-navy-800/80 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-white text-lg">Staff Shift Activity Feed</h3>
+                            <button onclick="switchTab('staff')" class="text-xs font-bold text-gold-400 hover:text-gold-500 transition">View Full Directory →</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="text-xs text-slate-400 uppercase border-b border-slate-700/80">
+                                        <th class="pb-3 font-semibold">Staff Member</th>
+                                        <th class="pb-3 font-semibold">Department</th>
+                                        <th class="pb-3 font-semibold">Shift Status</th>
+                                        <th class="pb-3 font-semibold text-right">Rating</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboardStaffTable" class="divide-y divide-slate-800/60">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Room Status Quick Summary -->
+                    <div class="bg-navy-800/80 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-white text-lg">Room Overview</h3>
+                            <button onclick="switchTab('rooms')" class="text-xs font-bold text-gold-400 hover:text-gold-500 transition">Manage →</button>
+                        </div>
+                        <div class="space-y-3" id="quickRoomStatusList">
+                            <!-- Populated Dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB 2: STAFF DIRECTORY ================= -->
+            <div id="view-staff" class="hidden space-y-6">
+                <!-- Controls & Filters Bar -->
+                <div class="bg-navy-800/80 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <!-- Search Input -->
+                    <div class="relative w-full md:w-80">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                        <input type="text" id="searchInput" oninput="filterStaff()" placeholder="Search staff by name or role..." class="w-full pl-9 pr-4 py-2 text-sm bg-navy-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-gold-500 transition">
+                    </div>
+
+                    <!-- Dropdown Filters -->
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <select id="departmentFilter" onchange="filterStaff()" class="text-sm border border-slate-700 rounded-xl px-3 py-2 bg-navy-900 text-slate-200 focus:outline-none focus:border-gold-500 w-full md:w-auto">
+                            <option value="All">All Departments</option>
+                            <option value="Front Desk">Front Desk</option>
+                            <option value="Housekeeping">Housekeeping</option>
+                            <option value="Kitchen & Bar">Kitchen & Bar</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Concierge">Concierge</option>
+                            <option value="Management">Management</option>
+                        </select>
+
+                        <select id="statusFilter" onchange="filterStaff()" class="text-sm border border-slate-700 rounded-xl px-3 py-2 bg-navy-900 text-slate-200 focus:outline-none focus:border-gold-500 w-full md:w-auto">
+                            <option value="All">All Statuses</option>
+                            <option value="On Duty">On Duty</option>
+                            <option value="Off Duty">Off Duty</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Staff Grid -->
+                <div id="staffGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Staff Cards Insertion -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 3: ROOMS & DUTY ASSIGNMENT ================= -->
+            <div id="view-rooms" class="hidden space-y-6">
+                <!-- Legend & Summary Header -->
+                <div class="bg-navy-800/80 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <h3 class="text-lg font-bold text-white">Live Room Matrix & Duty Tasking</h3>
+                    <div class="flex items-center space-x-4 text-xs font-semibold">
+                        <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span class="text-slate-300">Available</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span><span class="text-slate-300">Occupied</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span><span class="text-slate-300">Cleaning</span></span>
+                        <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-sky-500"></span><span class="text-slate-300">Maintenance</span></span>
+                    </div>
+                </div>
+
+                <!-- Room Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="roomGrid">
+                    <!-- Dynamic Room Cards -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal: Add / Edit Staff -->
+    <div id="staffModal" class="fixed inset-0 bg-navy-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-navy-900 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-800 overflow-hidden transform transition-all">
+            <!-- Modal Header -->
+            <div class="bg-navy-950 px-6 py-4 flex items-center justify-between border-b border-slate-800">
+                <h3 id="modalTitle" class="font-bold text-lg text-white">Add New Staff Member</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="staffForm" onsubmit="handleStaffSubmit(event)" class="p-6 space-y-4">
+                <input type="hidden" id="staffId">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
+                    <input type="text" id="staffName" required placeholder="e.g. Marcus Vance" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Department</label>
+                        <select id="staffDept" required class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-gold-500">
+                            <option value="Front Desk">Front Desk</option>
+                            <option value="Housekeeping">Housekeeping</option>
+                            <option value="Kitchen & Bar">Kitchen & Bar</option>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Concierge">Concierge</option>
+                            <option value="Management">Management</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Position / Role</label>
+                        <input type="text" id="staffRole" required placeholder="e.g. Concierge Supervisor" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Contact Phone</label>
+                        <input type="tel" id="staffPhone" required placeholder="+1 (555) 019-2834" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Shift Status</label>
+                        <select id="staffStatus" required class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-gold-500">
+                            <option value="On Duty">On Duty</option>
+                            <option value="Off Duty">Off Duty</option>
+                            <option value="On Leave">On Leave</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Email Address</label>
+                        <input type="email" id="staffEmail" required placeholder="m.vance@grandluxe.com" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Performance Rating (1-5)</label>
+                        <input type="number" step="0.1" min="1" max="5" id="staffRating" required placeholder="4.8" class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Avatar Photo URL (Optional)</label>
+                    <input type="url" id="staffAvatar" placeholder="https://images.unsplash.com/..." class="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-gold-500">
+                </div>
+
+                <div class="pt-4 flex justify-end space-x-3 border-t border-slate-800">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 border border-slate-700 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 transition">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 rounded-xl text-sm font-bold transition shadow-lg shadow-gold-500/10">Save Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Default Sample Data
+        const defaultStaff = [
+            { id: '1', name: 'Julian Thorne', department: 'Management', role: 'Operations Manager', phone: '+1 (555) 234-5678', email: 'j.thorne@grandluxe.com', rating: 4.9, status: 'On Duty', avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200' },
+            { id: '2', name: 'Sofia Rodriguez', department: 'Front Desk', role: 'Head Concierge', phone: '+1 (555) 345-6789', email: 's.rodriguez@grandluxe.com', rating: 4.8, status: 'On Duty', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200' },
+            { id: '3', name: 'David Chen', department: 'Kitchen & Bar', role: 'Executive Chef', phone: '+1 (555) 456-7890', email: 'd.chen@grandluxe.com', rating: 4.9, status: 'On Duty', avatar: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&q=80&w=200' },
+            { id: '4', name: 'Amina Idris', department: 'Housekeeping', role: 'Lead Housekeeper', phone: '+1 (555) 567-8901', email: 'a.idris@grandluxe.com', rating: 4.7, status: 'On Duty', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200' },
+            { id: '5', name: 'Lucas Miller', department: 'Maintenance', role: 'Chief Engineer', phone: '+1 (555) 678-9012', email: 'l.miller@grandluxe.com', rating: 4.6, status: 'Off Duty', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=200' },
+            { id: '6', name: 'Claire Dubois', department: 'Front Desk', role: 'Receptionist', phone: '+1 (555) 789-0123', email: 'c.dubois@grandluxe.com', rating: 4.5, status: 'On Leave', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=200' }
+        ];
+
+        const defaultRooms = [
+            { id: 101, type: 'Deluxe King', status: 'Occupied', guest: 'Mr. & Mrs. Sterling', assignedStaff: 'Amina Idris' },
+            { id: 102, type: 'Executive Suite', status: 'Cleaning', guest: 'Checked Out', assignedStaff: 'Amina Idris' },
+            { id: 103, type: 'Standard Suite', status: 'Available', guest: 'Vacant', assignedStaff: 'Unassigned' },
+            { id: 104, type: 'Penthouse Suite', status: 'Occupied', guest: 'Lord Harrington', assignedStaff: 'Sofia Rodriguez' },
+            { id: 105, type: 'Deluxe Twin', status: 'Maintenance', guest: 'Out of Order', assignedStaff: 'Lucas Miller' },
+            { id: 106, type: 'Standard King', status: 'Available', guest: 'Vacant', assignedStaff: 'Unassigned' },
+            { id: 107, type: 'Executive Suite', status: 'Occupied', guest: 'Dr. Aris Thorne', assignedStaff: 'Sofia Rodriguez' },
+            { id: 108, type: 'Deluxe King', status: 'Cleaning', guest: 'Pending Arrival', assignedStaff: 'Amina Idris' }
+        ];
+
+        // Persistent State Handling
+        let staffList = JSON.parse(localStorage.getItem('gl_hotel_staff')) || defaultStaff;
+        let roomList = JSON.parse(localStorage.getItem('gl_hotel_rooms')) || defaultRooms;
+
+        // On Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderDashboard();
+            renderStaffGrid();
+            renderRooms();
+
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const nav = document.getElementById('navMenu');
+                nav.classList.toggle('hidden');
+            });
+        });
+
+        function saveState() {
+            localStorage.setItem('gl_hotel_staff', JSON.stringify(staffList));
+            localStorage.setItem('gl_hotel_rooms', JSON.stringify(roomList));
+            renderDashboard();
+            renderStaffGrid();
+            renderRooms();
+        }
+
+        // Tab Switch Logic
+        function switchTab(tab) {
+            ['dashboard', 'staff', 'rooms'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-400 hover:bg-slate-800/60 hover:text-white";
+                }
+            });
+
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${tab}`);
+            if (activeNav) {
+                activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all bg-gold-500 text-navy-950 font-bold shadow-md shadow-gold-500/10";
+            }
+
+            const pageTitles = {
+                dashboard: "Operations Dashboard",
+                staff: "Staff Directory & Duty Status",
+                rooms: "Rooms Status & Task Assignments"
+            };
+            document.getElementById('pageTitle').innerText = pageTitles[tab];
+        }
+
+        // Dashboard View Rendering
+        function renderDashboard() {
+            const activeStaffCount = staffList.filter(s => s.status === 'On Duty').length;
+            const leaveStaffCount = staffList.filter(s => s.status === 'On Leave').length;
+
+            document.getElementById('statActiveStaff').innerText = activeStaffCount;
+            document.getElementById('statOnLeave').innerText = leaveStaffCount;
+
+            // Render Dashboard Activity Table
+            const tableBody = document.getElementById('dashboardStaffTable');
+            tableBody.innerHTML = staffList.slice(0, 5).map(staff => `
+                <tr class="hover:bg-slate-800/30 transition">
+                    <td class="py-3 flex items-center space-x-3">
+                        <img src="${staff.avatar}" class="w-8 h-8 rounded-full object-cover border border-slate-700">
+                        <div>
+                            <p class="font-bold text-white">${staff.name}</p>
+                            <p class="text-xs text-slate-400">${staff.role}</p>
+                        </div>
+                    </td>
+                    <td class="py-3 text-slate-300">${staff.department}</td>
+                    <td class="py-3">${getStatusBadge(staff.status)}</td>
+                    <td class="py-3 text-right text-gold-400 font-bold">★ ${staff.rating}</td>
+                </tr>
+            `).join('');
+
+            // Render Dashboard Room Quick List
+            const roomListContainer = document.getElementById('quickRoomStatusList');
+            roomListContainer.innerHTML = roomList.slice(0, 4).map(room => `
+                <div class="flex items-center justify-between p-3 rounded-xl bg-navy-900/60 border border-slate-800">
+                    <div>
+                        <p class="text-xs font-bold text-white">Room ${room.id} (${room.type})</p>
+                        <p class="text-[11px] text-slate-400">Assigned: ${room.assignedStaff}</p>
+                    </div>
+                    ${getRoomStatusBadge(room.status)}
+                </div>
+            `).join('');
+        }
+
+        // Staff Directory Rendering
+        function renderStaffGrid() {
+            const grid = document.getElementById('staffGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const dept = document.getElementById('departmentFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            const filtered = staffList.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(search) || s.role.toLowerCase().includes(search);
+                const matchesDept = dept === 'All' || s.department === dept;
+                const matchesStatus = status === 'All' || s.status === status;
+                return matchesSearch && matchesDept && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400">No staff members found matching your search options.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(staff => `
+                <div class="bg-navy-800/80 rounded-2xl border border-slate-800 p-5 shadow-lg flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="${staff.avatar}" class="w-12 h-12 rounded-xl object-cover border border-slate-700">
+                            <div>
+                                <h4 class="font-bold text-white">${staff.name}</h4>
+                                <p class="text-xs text-slate-400 font-medium">${staff.role}</p>
+                                <span class="inline-block text-[10px] font-bold text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/20 mt-1">${staff.department}</span>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold text-gold-400 flex items-center gap-1"><i data-lucide="star" class="w-3.5 h-3.5 fill-gold-400"></i> ${staff.rating}</span>
+                    </div>
+
+                    <div class="space-y-1.5 text-xs text-slate-300">
+                        <p class="flex items-center gap-2"><i data-lucide="phone" class="w-3.5 h-3.5 text-slate-500"></i> ${staff.phone}</p>
+                        <p class="flex items-center gap-2"><i data-lucide="mail" class="w-3.5 h-3.5 text-slate-500"></i> ${staff.email}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <label class="text-[11px] text-slate-400 font-semibold">Duty:</label>
+                            <select onchange="updateStaffStatus('${staff.id}', this.value)" class="text-xs bg-navy-950 border border-slate-700 text-slate-200 rounded-lg px-2 py-1 focus:outline-none">
+                                <option value="On Duty" ${staff.status === 'On Duty' ? 'selected' : ''}>On Duty</option>
+                                <option value="Off Duty" ${staff.status === 'Off Duty' ? 'selected' : ''}>Off Duty</option>
+                                <option value="On Leave" ${staff.status === 'On Leave' ? 'selected' : ''}>On Leave</option>
+                            </select>
+                        </div>
+                        ${getStatusBadge(staff.status)}
+                    </div>
+
+                    <div class="flex items-center space-x-2 pt-1">
+                        <button onclick="editStaff('${staff.id}')" class="flex-1 py-1.5 rounded-lg border border-slate-700 text-xs font-bold text-slate-300 hover:bg-slate-800 transition">Edit Details</button>
+                        <button onclick="deleteStaff('${staff.id}')" class="py-1.5 px-3 rounded-lg border border-rose-900/50 text-xs font-bold text-rose-400 hover:bg-rose-950/40 transition">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function filterStaff() {
+            renderStaffGrid();
+        }
+
+        function updateStaffStatus(id, newStatus) {
+            const staff = staffList.find(s => s.id === id);
+            if (staff) {
+                staff.status = newStatus;
+                saveState();
+            }
+        }
+
+        function getStatusBadge(status) {
+            if (status === 'On Duty') {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">On Duty</span>`;
+            } else if (status === 'Off Duty') {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">Off Duty</span>`;
+            } else {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">On Leave</span>`;
+            }
+        }
+
+        function getRoomStatusBadge(status) {
+            const styles = {
+                'Available': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+                'Occupied': 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                'Cleaning': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+                'Maintenance': 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+            };
+            return `<span class="px-2 py-0.5 rounded text-[10px] font-bold border ${styles[status] || ''}">${status}</span>`;
+        }
+
+        // Room Grid Rendering & Task Assigning
+        function renderRooms() {
+            const grid = document.getElementById('roomGrid');
+            grid.innerHTML = roomList.map(room => `
+                <div class="bg-navy-800/80 rounded-2xl border border-slate-800 p-5 shadow-lg flex flex-col justify-between space-y-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Room ${room.id}</span>
+                            <h4 class="font-bold text-white text-base">${room.type}</h4>
+                        </div>
+                        ${getRoomStatusBadge(room.status)}
+                    </div>
+
+                    <div class="space-y-1 text-xs">
+                        <p class="text-slate-400">Guest: <span class="text-slate-200 font-medium">${room.guest}</span></p>
+                        <p class="text-slate-400">Assigned: <span class="text-gold-400 font-medium">${room.assignedStaff}</span></p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800/80 space-y-2">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase">Assign Duty Staff</label>
+                        <select onchange="reassignRoomStaff(${room.id}, this.value)" class="w-full text-xs bg-navy-950 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-gold-500">
+                            <option value="Unassigned">Unassigned</option>
+                            ${staffList.map(s => `<option value="${s.name}" ${room.assignedStaff === s.name ? 'selected' : ''}>${s.name} (${s.department})</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function reassignRoomStaff(roomId, staffName) {
+            const room = roomList.find(r => r.id === roomId);
+            if (room) {
+                room.assignedStaff = staffName;
+                saveState();
+            }
+        }
+
+        // Modal Handlers
+        function openModal(editMode = false) {
+            if (!editMode) {
+                document.getElementById('staffForm').reset();
+                document.getElementById('staffId').value = '';
+                document.getElementById('modalTitle').innerText = 'Add New Staff Member';
+            }
+            document.getElementById('staffModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('staffModal').classList.add('hidden');
+        }
+
+        function editStaff(id) {
+            const staff = staffList.find(s => s.id === id);
+            if (!staff) return;
+
+            document.getElementById('staffId').value = staff.id;
+            document.getElementById('staffName').value = staff.name;
+            document.getElementById('staffDept').value = staff.department;
+            document.getElementById('staffRole').value = staff.role;
+            document.getElementById('staffPhone').value = staff.phone;
+            document.getElementById('staffEmail').value = staff.email;
+            document.getElementById('staffRating').value = staff.rating;
+            document.getElementById('staffStatus').value = staff.status;
+            document.getElementById('staffAvatar').value = staff.avatar;
+
+            document.getElementById('modalTitle').innerText = 'Edit Staff Member';
+            openModal(true);
+        }
+
+        function handleStaffSubmit(event) {
+            event.preventDefault();
+            const id = document.getElementById('staffId').value;
+            const name = document.getElementById('staffName').value;
+            const department = document.getElementById('staffDept').value;
+            const role = documen
+
+        function deleteStaff(id) {
+            if (confirm('Are you sure you want to remove this staff record?')) {
+                staffList = staffList.filter(s => s.id !== id);t.getElementById('staffRole').value;
+            const phone = document.getElementById('staffPhone').value;
+            const email = document.getElementById('staffEmail').value;
+            const rating = parseFloat(document.getElementById('staffRating').value) || 4.5;
+            const status = document.getElementById('staffStatus').value;
+            const avatar = document.getElementById('staffAvatar').value || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200';
+
+            if (id) {
+                const index = staffList.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    staffList[index] = { id, name, department, role, phone, email, rating, status, avatar };
+                }
+            } else {
+                const newStaff = {
+                    id: Date.now().toString(),
+                    name, department, role, phone, email, rating, status, avatar
+                };
+                staffList.push(newStaff);
+            }
+
+            saveState();
+            closeModal();
+        }
+                saveState();
+            }
+        }
+    </script>
+</body>
+</html>
